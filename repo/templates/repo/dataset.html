@@ -1,0 +1,15 @@
+{% extends "repo/base.html" %}
+
+{% block title %} {{ dataset.title }} {% endblock %}
+
+{% block content %}
+
+<h2>{{ dataset.title }}</h1>
+
+<p>{{ dataset.description }}</p>
+
+<p>SOME RDF STUFF</p>
+
+<p><a href="/repo/">Back</a></p>
+
+{% endblock %}
