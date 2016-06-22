@@ -120,3 +120,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# Snek-specific stuff
+
+FCREPO = {
+    'uri': 'http://localhost:8080/fcrepo/',
+    'users': {
+        'user': {
+            'user': 'fedoraAdmin',
+            'password': 'secret3'
+            }
+        }
+    }
+

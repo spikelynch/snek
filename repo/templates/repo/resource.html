@@ -1,0 +1,18 @@
+{% extends "repo/base.html" %}
+
+{% block title %} {{ title }} {% endblock %}
+
+{% block content %}
+
+<h2>{{ title }}</h1>
+
+<p>Path: {{ path }}</p>
+
+<p>URI: {{ uri }}</p>
+
+{% for namespace, values in rdf.items %}
+    {% include "repo/namespaces/base.html" with namespace=namespace values=values %}
+{% endfor %}
+
+
+{% endblock %}
