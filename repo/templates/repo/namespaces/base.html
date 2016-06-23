@@ -1,17 +1,20 @@
 {% load app_filters %}
 
-<div class="rdfns" id="{{ namespace }}">
+<div class="row">
   <h3>{{ namespace }}</h3>
+</div>
   {% for p, vs in values.items %}
-      {% for v in vs %}
-  <div class="triple">{{ v.p_label }}:
+{% for v in vs %}
+  <div class="row">
+  <div class="col-md-4">{{ v.p_label }}</div>
+  <div class="col-md-8">
     {% if v.url %}
-    <a href="{{ v.url | link_if_fc }}">{{ v.o_label }}</a></div>
+<a href="{{ v.url | link_if_fc }}">{{ v.o_label }}</a>
     {% else %}
     {{ v.o_label }}
     {% endif %}
-        </div>
+  </div>
+ </div>
       {% endfor %}
   {% endfor %}
- </div>
 
