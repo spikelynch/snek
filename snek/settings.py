@@ -124,16 +124,20 @@ STATIC_URL = '/static/'
 LOGIN_URL = '/login/'
 
 
-# Snek-specific stuff
+# Snek-specific stuff - the Fedora URL/user/password.
 
-#from settings_local import *
+# put this in a file snek/settings_local.py with the following:
 
-FCREPO = {
-    'uri': 'http://localhost:8080/fcrepo/',
-    'users': {
-        'user': {
-            'user': 'fedoraAdmin',
-            'password': 'secret3'
-            }
-        }
-    }
+# FCREPO = {
+#    'uri': 'http://localhost:8080/fcrepo/',
+#    'users': {
+#        'user': {
+#            'user': 'fedoraAdmin',
+#            'password': 'SSSSSSSSSECRET'
+#            }
+#        }
+#    }
+
+
+from snek.settings_local import *
+
