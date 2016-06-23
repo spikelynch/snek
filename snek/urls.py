@@ -16,9 +16,11 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+from django.http import HttpResponseRedirect
 
 urlpatterns = [
     url(r'^',  include('django.contrib.auth.urls')),
+    url(r'^$',     lambda r: HttpResponseRedirect('repo/')),
     url(r'^repo/', include('repo.urls')),
     url(r'^admin/', admin.site.urls),
 ]

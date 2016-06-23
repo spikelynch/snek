@@ -121,8 +121,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+LOGIN_URL = '/login/'
+
 
 # Snek-specific stuff
+
+#from settings_local import *
 
 FCREPO = {
     'uri': 'http://localhost:8080/fcrepo/',
@@ -133,4 +137,3 @@ FCREPO = {
             }
         }
     }
-

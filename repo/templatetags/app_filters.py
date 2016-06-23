@@ -12,7 +12,7 @@ FC_URL_RE = re.compile('^' + settings.FCREPO['uri'] + 'rest/(.*)$')
 def link_if_fc(url):
     m = FC_URL_RE.search(url)
     if m:
-        fclink = '/repo/fc/' + m.group(1)
+        fclink = '/repo/' + m.group(1)
         return fclink
     else:
         return url

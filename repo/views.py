@@ -74,7 +74,7 @@ def fc(request, fcpath):
 
 
 @login_required()
-def index(request):
+def old_index(request):
     if request.method == 'POST':
         logger.warn("Got to the post part")
         form = DatasetUploadForm(request.POST, request.FILES)
