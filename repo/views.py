@@ -38,7 +38,10 @@ def fc(request, fcpath):
     t = { 'path': fcpath, 'uri': uri }
 
     namespaces = {}
-    if hasattr(resource, 'rdf'):
+    if not hasattr(resource, 'rdf'):
+        t['binary'] = resource.uri
+        t['image'] = 1
+    else:
         # extract RDF into dicts with p, o, p_label, o_label
         t['debug'] = resource.rdf.serialize(format="nt")
         for s, p, o in resource.rdf:
@@ -68,7 +71,6 @@ def fc(request, fcpath):
     return render(request, 'repo/resource.html', t)
 
 
-    
 
 
 @login_required()

@@ -4,15 +4,30 @@
 
 {% block content %}
 
+<div id="header">
 <h2>{{ title }}</h1>
 
 <p>Path: {{ path }}</p>
 
 <p>URI: {{ uri }}</p>
+</div>
 
-{% for namespace, values in rdf.items %}
-    {% include "repo/namespaces/base.html" with namespace=namespace values=values %}
-{% endfor %}
-
+{% if binary %}
+    <div id="binary">
+        {% if image %}
+          <img src="{{ binary }}" />
+        {% else %}
+          <a href="{{ binary }}">Download</a>
+        {% endif %}
+    </div>
+{% endif %}
+      
+{% if rdf %}
+    <div id="rdf">
+    {% for namespace, values in rdf.items %}
+        {% include "repo/namespaces/base.html" with namespace=namespace values=values %}
+    {% endfor %}
+    </div> 
+{% endif %}
 
 {% endblock %}
