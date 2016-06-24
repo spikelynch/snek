@@ -35,7 +35,9 @@ def fc(request, fcpath):
     except fcrepo4.ResourceError as e:
         return HttpResponseNotFound('<h1>Resource not found</h1>')
 
-    t = { 'path': fcpath, 'uri': uri }
+    if request.method == 'POST':
+        return upload(request, resource)
+    t = { 'path': fcpath, 'uri': uri, 'form': DatasetUploadForm() }
 
     namespaces = {}
     if not hasattr(resource, 'rdf'):
@@ -44,6 +46,7 @@ def fc(request, fcpath):
     else:
         # extract RDF into dicts with p, o, p_label, o_label
         t['debug'] = resource.rdf.serialize(format="nt")
+
         for s, p, o in resource.rdf:
             for abbrev, re in NAMESPACES.items():
                 m = re.match(str(p))
@@ -74,26 +77,20 @@ def fc(request, fcpath):
 
 
 @login_required()
-def old_index(request):
-    if request.method == 'POST':
-        logger.warn("Got to the post part")
-        form = DatasetUploadForm(request.POST, request.FILES)
-        if form.is_valid():
-            logger.warn("Form is valid")
-            dataset = form.save(commit=False)
-            dataset.user = request.user
-            dataset.content_type = request.FILES['dataset'].content_type
-            dataset.save()
-#            table = ImageTable(dataset)
-#            table.save()
-            return HttpResponseRedirect('/repo/%d' % dataset.id)
-        else:
-            logger.warn("Form is invalid")
+def upload(request, resource):
+    form = DatasetUploadForm(request.POST, request.FILES)
+    if form.is_valid():
+        upload = request.FILES['dataset']
+        dataset = form.save(commit=False)
+        dataset.user = request.user
+        dataset.content_type = upload.content_type
+        dataset.save()
+        logger.debug("About to add binary {} to {}".format(upload.name, resource.uri))
+        uri = resource.add_binary(upload.chunks(), slug=upload.name, mime=upload.content_type)
+        return HttpResponseRedirect(request.path)
     else:
-        form = DatasetUploadForm()
-
-    datasets = Dataset.objects.filter(user=request.user)
-    return render(request, 'repo/index.html', { 'datasets': datasets, 'form': form })
+        logger.warn("Form is invalid")
+    return render(request, 'repo/resource.html', {'form': form })
 
 
 

@@ -1,16 +1,7 @@
 {% extends "repo/base.html" %}
 
-{% block title %} My datasets {% endblock %}
 
 {% block content %}
-{% if datasets %}
-<ul>
-{% for dataset in datasets %}
-<li><a href="/repo/{{ dataset.id }}">{{ dataset.title }}</a></li>
-{% endfor %}
-</ul>
-
-{% endif %}
 
 <form action="/repo/" method="post" enctype="multipart/form-data">
 

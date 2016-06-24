@@ -21,8 +21,26 @@
         {% endif %}
     </div>
 {% endif %}
-      
-{% if rdf %}
+
+    {% if form %}
+   <div class="row">
+    <form action="{{ request.path }}" method="post" enctype="multipart/form-data">
+
+<table>
+
+  {% csrf_token %}
+
+  {{ form }}
+
+</table>
+<input type="submit" value="Upload" />
+  
+</form>
+</div>
+{% endif %}
+    
+    {% if rdf %}
+    
     <div class="rdf">
     {% for namespace, values in rdf.items %}
         {% include "repo/namespaces/base.html" with namespace=namespace values=values %}

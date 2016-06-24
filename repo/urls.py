@@ -6,5 +6,5 @@ urlpatterns = [
     # /repo/
 #    url(r'^$',                            views.index,   name='index'),
     # /repo/${FC_REPO_PATH}
-    url(r'^(.*)$',                     views.fc, name='fc')
+    url(r'^(.*)$',                         views.fc, name='fc')
 ]
