@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.conf import settings
 import logging
 
@@ -15,9 +16,10 @@ import re
 
 NAMESPACES = {
     'ldp':  re.compile(r'^http://www.w3.org/ns/ldp#(.*)$'),
-    'dc':   re.compile(r'^http://purl.org/dc/terms/(.*)$'),
-    'pdcm': re.compile(r'^http://pcdm.org/models#(.*)$')
-}
+    'dc':   re.compile(r'^http://purl.org/dc/.*?/([^/]*)$'),
+    'pdcm': re.compile(r'^http://pcdm.org/models#(.*)$'),
+    'fedora': re.compile(r'^http://fedora.info/definitions/v4/repository#(.*)$'),
+    }
 
 
 logger = logging.getLogger(__name__)
@@ -45,12 +47,13 @@ def fc(request, fcpath):
         t['image'] = 1
     else:
         # extract RDF into dicts with p, o, p_label, o_label
-        t['debug'] = resource.rdf.serialize(format="nt")
-
+        t['turtle'] = resource.rdf.serialize(format="turtle")
         for s, p, o in resource.rdf:
+            logger.warn("Predicate: {}".format(str(p)))
             for abbrev, re in NAMESPACES.items():
                 m = re.match(str(p))
                 if m:
+                    logger.warn("Matched {}".format(abbrev))
                     field = m.group(1)
                     v = {
                         'p': p,
@@ -85,8 +88,21 @@ def upload(request, resource):
         dataset.user = request.user
         dataset.content_type = upload.content_type
         dataset.save()
-        logger.debug("About to add binary {} to {}".format(upload.name, resource.uri))
-        uri = resource.add_binary(upload.chunks(), slug=upload.name, mime=upload.content_type)
+        dc = resource.repo.dc_rdf({
+            'title': dataset.title,
+            'description': dataset.description,
+            'creator': dataset.user
+            }
+            )
+        try:
+            container = resource.add_container(dc, slug=upload.name)
+        except fcrepo4.ResourceError as e:
+            em = "FC4 resource error: {} {} {}".format(e.status_code, e.reason, e.message)
+            logger.error(em)
+            messages.error(request, em)
+            return HttpResponseRedirect(request.path)
+        binary = container.add_binary(upload.chunks(), slug=upload.name, mime=upload.content_type)
+        messages.info(request, "Added new binary in a container at {}".format(container.uri))
         return HttpResponseRedirect(request.path)
     else:
         logger.warn("Form is invalid")

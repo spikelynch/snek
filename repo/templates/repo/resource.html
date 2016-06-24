@@ -45,7 +45,15 @@
     {% for namespace, values in rdf.items %}
         {% include "repo/namespaces/base.html" with namespace=namespace values=values %}
       {% endfor %}
-    </div> 
+    </div>
 {% endif %}
+
+    {% if turtle %}
+    <div class="debug">
+      <pre>
+      {{ turtle }}
+      </pre>
+    </div>
+    {% endif %}
 
 {% endblock %}
