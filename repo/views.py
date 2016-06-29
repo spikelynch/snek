@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
-import logging
+import logging, requests, json
 
 from .forms import DatasetUploadForm
 from .models import Dataset
@@ -110,42 +110,29 @@ def upload(request, resource):
 
 
 
-
-
-
 @login_required()
-def dataset(request, dataset_id):
-    ds = Dataset.objects.get(pk=dataset_id)
-    if ds:
-        return render(request, 'repo/dataset.html', { 'dataset': ds })
+def search(request):
+    q = request.GET.get('q', None)
+    if not q:
+        return HttpResponseRedirect('repo/')
     else:
-        return HttpResponseNotFound('<h1>Dataset not found</h1>')
+        solr_uri = settings.FCREPO['solr_uri']
+        solrq = "title:*{}* OR description:*{}* OR author:{}".format(q, q, q)
+        params = {}
+        params['q'] = solrq
+        params['wt'] = 'json'
+        vars = {}
+        r = requests.get(solr_uri, params=params)
+        if r.status_code == requests.codes.ok:
+            response = json.loads(r.text)['response']
+            vars['num'] = response['numFound']
+            vars['docs'] = response['docs']
+            logger.warn("results = {}".format(response))
+        else:
+            vars['error'] = "Solr error: {} {}".format(r.status_code, r.reason)
+            logger.error(error)
+        return render(request, 'repo/search.html', vars)
 
-@login_required()
-def databytes(request, dataset_id):
-    logger.warn("databytes: %s" % request.path)
-    ds = Dataset.objects.get(pk=dataset_id)
-    content_type = ds.content_type
-    if ds:
-        response = HttpResponse(content_type=content_type)
-        response['Content-disposition'] = 'attachment;filename="%s"' % ds.dataset.url
-        with ds.dataset.file as f:
-            response.write(f.read())
-        return response
-    else:
-        return HttpResponseNotFound('<h1>Dataset not found</h1>')
 
-    
-def json(request, dataset_id):
-    """This runs a query over a dataset and returns the requested fields"""
-    ds = Dataset.objects.get(pk=dataset_id)
-    expr = request.GET.get('query')
-    if ds:
-#        table = ImageTable(ds)
-#        if table:
-#            json = table.json(expr)
-#        else:
-#            json = { 'error': 'system error' }
-        return HttpResponse(json, content_type="application/json")
-    else:
-        return HttpResponseNotFound('<h1>Dataset not found</h1>')
+
+

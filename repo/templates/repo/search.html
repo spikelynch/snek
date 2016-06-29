@@ -1,0 +1,30 @@
+{% extends "repo/base.html" %}
+{% load app_filters %}
+
+{% block title %} Search results {% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <h1>Search results</h1>
+</div>
+
+{% if error %}
+
+<p>{{ error }}</p>
+
+{% endif %}
+
+<p>Number of results = {{ num }}</p>
+
+{% for d in docs %}
+
+<div class="row">
+  <div class="col-md-4"><a href="{{ d.id | link_if_fc }}">{{ d.title.0 }}</a></div>
+  <div class="col-md-4">{{ d.author }}</div>
+  <div class="col-md-4">{{ d.description }}</div>
+</div>
+
+{% endfor %}
+
+{% endblock %}

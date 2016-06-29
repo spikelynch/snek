@@ -22,23 +22,6 @@
     </div>
 {% endif %}
 
-    {% if form %}
-   <div class="row">
-    <form action="{{ request.path }}" method="post" enctype="multipart/form-data">
-
-<table>
-
-  {% csrf_token %}
-
-  {{ form }}
-
-</table>
-<input type="submit" value="Upload" />
-  
-</form>
-</div>
-{% endif %}
-    
     {% if rdf %}
     
     <div class="rdf">
@@ -48,12 +31,5 @@
     </div>
 {% endif %}
 
-    {% if turtle %}
-    <div class="debug">
-      <pre>
-      {{ turtle }}
-      </pre>
-    </div>
-    {% endif %}
 
 {% endblock %}
